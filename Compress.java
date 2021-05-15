@@ -1,87 +1,12 @@
-// grupas nosaukums:  Monke Squad
+import javafx.scene.Scene;
 
-public class Node{
- // Mezgla klase, tiek izmantota Huffman mezglu inicializācijai un mezglu salīdzināšanai pēc to biežuma.
-  public Node leftNode, rightNode;
-  public int weight, character;
-  // Mezgla inicializācija
-  public Node(int weight){
-    this.weight = weight;
-  };
-  public Node(int weight, char character){
-      this.weight = weight;
-      this.character = character;
-  };
-  public Node(int weight, Node leftNode, Node rightNode){
-      this.weight = weight;
-      this.leftNode = leftNode;
-      this.rightNode = rightNode;
-  };
-  public void setWeight(int weight){
-    this.weight = weight;
-  }
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-  public int getWeight(){
-    return this.weight;
-  }
 
-  public void setChar(char character){
-    this.character = character;
-  }
-
-  public int getChar(){
-    return this.character;
-  }
-
-  public void setLeftNode(Node leftNode){
-    this.leftNode = leftNode;
-  }
-
-  public void setRightNode(Node rightNode){
-    this.rightNode = rightNode;
-  }
-
-  public Node getLeftNode(){
-    return this.leftNode;
-  }
-
-  public Node getRightNode(){
-    return this.rightNode;
-  }
-  
-  // Mezgla salīdzināšana pēc to biežuma
-  public int compareTo(Node node){
-    if(this.weight > node.weight) return 1;
-    else if(this.weight < node.weight) return -1;
-    else return 0;
-  }
-
-}
-
-public class HuffmanTree{
-// Izveido Huffman koku un ģenerē Huffman kodu
-  public HuffmanTree(){}
-
-  // Izveido Huffman koku
-  public void createAndReplace(){
-
-  }
-
-  // Salīdzina mezglus pēc to biežuma
-  public void comparator(){
-
-  }
-  
-  // Sakārto mezglus pēc to biežuma, ar mazākajām vērtībām sākumā
-  public void sortList(){
-
-  }
-
-}
-
-public class Compress{
-
- static int count = 7;
+public class compress {
+    static int count = 7;
     static int buffer = 0;
     static int length=0;
     ArrayList<Node> nodes  = new ArrayList<>();
@@ -89,21 +14,18 @@ public class Compress{
     public compress(String path) throws IOException {
         String out;
         compressFile = new File(path);
-        
+                 //This can only have one stream here.
         if(compressFile.isDirectory()){
             out=path+".zip";
         }else {
-            String prefix = path.substring(0, path.lastIndexOf("."));
+            String prefix = path.substring(0, path.lastIndexOf("."));//
             out= prefix+".zip";
         }
         BufferedOutputStream outputStream= new BufferedOutputStream(new FileOutputStream(out));
         compressFile(compressFile,outputStream);
         outputStream.close();
     }
-
-
-
-      public void compressFile(File ptah,BufferedOutputStream bufferedOutputStream) throws IOException {
+    public void compressFile(File ptah,BufferedOutputStream bufferedOutputStream) throws IOException {
         if(ptah.isDirectory()){
             String directoryName = ptah.getPath();
             bufferedOutputStream.write(directoryName.length());
@@ -112,7 +34,7 @@ public class Compress{
             for(int a=0;a<directoryName.length();a++){
                 char ch = directoryName.charAt(a);
                 bufferedOutputStream.write(ch);
-                                 
+                                 / / Write the length of the file name and file name
             }
             compress_file(ptah,bufferedOutputStream);
         }else {
@@ -124,14 +46,14 @@ public class Compress{
             for(int a=0;a<directoryName.length();a++){
                 char ch = directoryName.charAt(a);
                 bufferedOutputStream.write(ch);
-                                 
+                                 / / Write the length of the file name
             }
            // System.out.println(directoryName.length() + "   type   "+ type +"   "+ directoryName );
             compress_f(ptah,bufferedOutputStream);
         }
     }
 
-        private void compress_file(File ptah, BufferedOutputStream bufferedOutputStream) throws IOException {
+    private void compress_file(File ptah, BufferedOutputStream bufferedOutputStream) throws IOException {
         if (!ptah.exists())
             return;
         File[] files = ptah.listFiles();
@@ -139,8 +61,7 @@ public class Compress{
        compressFile(files[i],bufferedOutputStream);
         }
     }
-
-        private void compress_f(File file, BufferedOutputStream bufferedOutputStream) throws IOException {
+    private void compress_f(File file, BufferedOutputStream bufferedOutputStream) throws IOException {
         if(!file.exists())
             return;
         int[] characterAndWeight =getInts(file);
@@ -157,8 +78,7 @@ public class Compress{
         map.clear();
     }
 
-  // veic saspiestā faila ierakstu
-  public void writeFile(File path, BufferedOutputStream bufferedOutputStream, HashMap<Integer,String> map) throws IOException {
+    public static void writeFile(File path, BufferedOutputStream bufferedOutputStream, HashMap<Integer,String> map) throws IOException {
         BufferedInputStream fis = new BufferedInputStream(new FileInputStream(path));
         BufferedOutputStream out = bufferedOutputStream;
         String theCodeOfLength="";
@@ -181,7 +101,7 @@ public class Compress{
                 out.write((byte)0);
             }
         }
-
+                 / / Write Huffman code length
         for(int i= 0;i<=255;i++){
             if(map.containsKey(i)){
                 String character = map.get(i);
@@ -210,9 +130,9 @@ public class Compress{
         fis.close();
     }
 
-  // writeFile() palīgmetode bitu ierakstīšanai failā
-  public void writeBit(int ch,BufferedOutputStream outputStream)throws IOException{
-    int a= ch<<count;
+
+    private static void writeBit(int ch,BufferedOutputStream outputStream) throws IOException {
+        int a= ch<<count;
         buffer=buffer|a;
         count--;
         if (count==-1){
@@ -220,13 +140,12 @@ public class Compress{
             count=7;
             buffer=0;
         }
+    }
 
-  }
 
- 
-  // writeFile() palīgmetode
-  public  static int[] getInts(File path) throws IOException {
-            int [] times = new int[256];
+
+    public  static int[] getInts(File path) throws IOException {
+        int [] times = new int[256];
         BufferedInputStream fis = new BufferedInputStream(new  FileInputStream(path));
         int value = fis.read();
         while (value!=-1){
@@ -236,60 +155,13 @@ public class Compress{
         }
         fis.close();
         return times;
-
-  }
-
-}
-
-
-public class Decompress{
-// Faila atkodēšana
-
-  public Decompress(){}
-
-  // inicializē faila atkodēšanu, pārliecinās vai fails eksistē, atgriež kļūdu pretējā gadījumā
-	public void findFile(){
-
-  }
-
-	// faila atkodēšanas no zip formāta algoritms
-	public void decompressFile(){
-
-  }
-
-	// palīgmetode faila lasīšanai
-	public void read(){
-
-  }
-}
-
-
-
-class Main {
-   //Galvenā klase programmas kontrolei
-
-    // Faila saspiešana
-    public static void compress(){
+    }
+      public static void main(String[] args) throws IOException {
+        long start = System.currentTimeMillis();
+               Compress compress = new compress("file/3.csv");//Change your own file path here.
+        long end = System.currentTimeMillis();
+        System.out.println("execute time:"+(end - start)+"ms");
 
     }
 
-    // Faila atkodēšana
-    public static void decode(){
-
-    }
-
-    // Izvada faila izmēru
-    public static void size(){
-
-    }
-
-    //
-    public static void equal(){
-
-    }
-
-    // Metode programmas izslēgšanai
-    public static void exit(){
-
-    }
 }
